@@ -1,0 +1,18 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace API.DTO
+{
+    public class RegisterDto
+    {
+        [Required]
+        public string DisplayName { get; set; } = "";
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = "";
+        [Required]
+        [MinLength(4)]
+        [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?""{}|<>]).{8,}$", ErrorMessage = "Password must be at least 8 characters long, contain one uppercase letter, one digit, and one special character.")]
+
+        public string Password { get; set; } = "";
+    }
+}

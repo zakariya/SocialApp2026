@@ -7,7 +7,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class SubscriptionController : ControllerBase
+    public class SubscriptionController : BaseApiController
     {
         private readonly AppDbContext _db;
         private readonly CorsCacheService _cache;
