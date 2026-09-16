@@ -8,7 +8,7 @@ namespace API.Controllers
 {
     // [Route("api/[controller]")] //api/members
     // [ApiController]
-    [Authorize]
+    //[Authorize]
     public class MembersController(AppDbContext context) : BaseApiController
     {
         [HttpGet]
