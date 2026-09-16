@@ -21,7 +21,11 @@ export class Register {
       next: response => {
         console.log(response);
         this.cancel();
-      }, error: error => console.log(error)
+      }, error: error => {
+        console.log(error);
+        alert(error.message);
+
+      }
 
     })
   }
