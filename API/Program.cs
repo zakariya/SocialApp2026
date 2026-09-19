@@ -1,6 +1,7 @@
 using System.Text;
 using API.Data;
 using API.Interfaces;
+using API.Middleware;
 using API.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // ✅ Load initial origins into cache
 using (var scope = app.Services.CreateScope())
