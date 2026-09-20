@@ -1,5 +1,6 @@
 using System.Text;
 using API.Data;
+using API.Data.Migrations;
 using API.Interfaces;
 using API.Middleware;
 using API.Service;
@@ -23,6 +24,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddSingleton<CorsCacheService>();
+builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -47,15 +49,31 @@ app.UseMiddleware<ExceptionMiddleware>();
 // ✅ Load initial origins into cache
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var cache = scope.ServiceProvider.GetRequiredService<CorsCacheService>();
+    var services = scope.ServiceProvider;
+    try
+    {
 
-    var origins = db.Aggregators
-        .Where(c => c.SubscriptionExpiry > DateTime.UtcNow)
-        .Select(c => c.Url)
-        .ToList();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var cache = scope.ServiceProvider.GetRequiredService<CorsCacheService>();
 
-    cache.LoadOrigins(origins);
+        await db.Database.MigrateAsync();
+        await Seed.SeedUsers(db);
+
+        var origins = db.Aggregators
+            .Where(c => c.SubscriptionExpiry > DateTime.UtcNow)
+            .Select(c => c.Url)
+            .ToList();
+
+        cache.LoadOrigins(origins);
+
+
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occured during migration");
+    }
+
 }
 
 // ✅ Configure CORS policy globally without BuildServiceProvider
@@ -75,4 +93,6 @@ app.UseSwaggerUI();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+
 app.Run();

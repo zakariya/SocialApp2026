@@ -13,5 +13,9 @@ namespace API.Data
 
         public DbSet<AppUser> Users { get; set; }
         public DbSet<Aggregator> Aggregators { get; set; }
+
+        public DbSet<Member> Members { get; set; }
+        public DbSet<Photo> Photos { get; set; }
+
     }
 }
