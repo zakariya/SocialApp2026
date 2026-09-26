@@ -1,6 +1,7 @@
 using System.Text;
 using API.Data;
 using API.Data.Migrations;
+using API.Helpers;
 using API.Interfaces;
 using API.Middleware;
 using API.Service;
@@ -23,8 +24,12 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
 
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddSingleton<CorsCacheService>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+builder.Services.Configure<CloudinarySettings>(builder.Configuration
+                .GetSection("CloudinarySettings"));
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
