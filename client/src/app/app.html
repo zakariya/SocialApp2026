@@ -1,7 +1,10 @@
 <app-nav />
 
-<!-- <app-home [membersFromApp]="members()" /> -->
+<input placeholder="{{ 'displayNamePlaceholder'  }}">
+<div>{{ 'displayNameError' }}</div>
 
+<button (click)="switchLanguage('en')">English</button>
+<button (click)="switchLanguage('ar')">العربية</button>
 
 <div [class.mt-24]="router.url !=='/'" [class.container]="router.url !=='/'" [class.mx-auto]="router.url !=='/'">
     <router-outlet />

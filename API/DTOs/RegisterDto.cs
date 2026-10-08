@@ -12,7 +12,12 @@ namespace API.DTO
         [Required]
         [MinLength(4)]
         [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?""{}|<>]).{8,}$", ErrorMessage = "Password must be at least 8 characters long, contain one uppercase letter, one digit, and one special character.")]
-
         public string Password { get; set; } = "";
+
+        [Required] public string Gender { get; set; } = string.Empty;
+        [Required] public string City { get; set; } = string.Empty;
+        [Required] public string Country { get; set; } = string.Empty;
+        [Required] public DateOnly DateOfBirth { get; set; }
+
     }
 }
