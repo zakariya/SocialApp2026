@@ -26,6 +26,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddSingleton<CorsCacheService>();
+builder.Services.AddSingleton<LogUserActivity>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.Configure<CloudinarySettings>(builder.Configuration
                 .GetSection("CloudinarySettings"));
