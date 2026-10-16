@@ -31,4 +31,4 @@
 
 }
 <app-filter-modal #filterModal [hidden]="!paginatedMembers()" (closeModal)="onClose()"
-    (sumbitData)="onFilterChange($event)" />
+    (sumbitData)="onFilterChange($event)" [memberParams]="memberParams" />

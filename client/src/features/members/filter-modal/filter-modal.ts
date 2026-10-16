@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, input, model, output, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, input, model, output, SimpleChanges, ViewChild } from '@angular/core';
 import { MemberParams } from '../../../types/member';
 import { FormsModule } from '@angular/forms';
 
@@ -13,13 +13,14 @@ export class FilterModal {
   closeModal = output();
   sumbitData = output<MemberParams>();
   memberParams = model(new MemberParams());
-  @Input() params!: MemberParams;
+
   constructor() {
     const filters = localStorage.getItem('filters');
     if (filters) {
       this.memberParams.set(JSON.parse(filters));
     }
   }
+
 
   open() {
     this.modalRef.nativeElement.showModal();
