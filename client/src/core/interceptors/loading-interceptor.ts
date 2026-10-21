@@ -35,6 +35,10 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
     invalidateCahce('/likes')
   }
 
+  if (req.method.includes('POST') && req.url.includes('/messages')) {
+    invalidateCahce('/messages')
+  }
+
   busyService.busy();
   return next(req).pipe(
     delay(500),
