@@ -1,12 +1,15 @@
 using System.Text;
 using API.Data;
 using API.Data.Migrations;
+using API.Entities;
 using API.Helpers;
 using API.Interfaces;
 using API.Middleware;
 using API.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +23,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    opt.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
 });
 
 
@@ -32,6 +36,14 @@ builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<ILikesRepository, LikesRepository>();
 builder.Services.Configure<CloudinarySettings>(builder.Configuration
                 .GetSection("CloudinarySettings"));
+
+builder.Services.AddIdentityCore<AppUser>(opt =>
+{
+    opt.Password.RequireNonAlphanumeric = false;
+    opt.User.RequireUniqueEmail = true;
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -48,6 +60,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
                 });
 
+builder.Services.AddAuthorizationBuilder()
+       .AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"))
+       .AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
 
 
 var app = builder.Build();
@@ -62,10 +77,11 @@ using (var scope = app.Services.CreateScope())
     {
 
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var userManager = services.GetRequiredService<UserManager<AppUser>>();
         var cache = scope.ServiceProvider.GetRequiredService<CorsCacheService>();
 
         await db.Database.MigrateAsync();
-        await Seed.SeedUsers(db);
+        await Seed.SeedUsers(userManager);
 
         var origins = db.Aggregators
             .Where(c => c.SubscriptionExpiry > DateTime.UtcNow)
@@ -92,6 +108,7 @@ app.UseCors(policy =>
 
     policy.AllowAnyHeader()
           .AllowAnyMethod()
+          .AllowCredentials()
           .SetIsOriginAllowed(origin => cache.IsAllowed(origin));
 });
 
