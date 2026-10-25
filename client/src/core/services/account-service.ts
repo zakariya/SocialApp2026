@@ -4,6 +4,8 @@ import { LoginCreds, RegisterCreds, User } from '../../types/user';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LikesService } from './likes-service';
+import { PresenceService } from './presence-service';
+import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 
 @Service()
 export class AccountService {
@@ -12,6 +14,7 @@ export class AccountService {
     private likeService = inject(LikesService);
     currentUser = signal<User | null>(null)
     private baseUrl = environment.apiUrl;
+    private presenceService = inject(PresenceService);
 
     register(creds: RegisterCreds) {
         return this.http.post<User>(this.baseUrl + 'account/register', creds, { withCredentials: true }).pipe(
@@ -51,19 +54,24 @@ export class AccountService {
                         this.logout()
                     }
                 })
-        }, 5*60 * 1000)
+        }, 5 * 60 * 1000)
     }
 
     setCurrentUser(user: User) {
         user.roles = this.getRolesFromToken(user);
         this.currentUser.set(user)
-        this.likeService.getLikkeIds()
+        this.likeService.getLikeIds()
+        if (this.presenceService.hubConnection?.state !== HubConnectionState.Connected) {
+            this.presenceService.createHUbConnection(user);
+        }
+
     }
 
     logout() {
         localStorage.removeItem('filters');
         this.likeService.clearLikeIds();
         this.currentUser.set(null);
+        this.presenceService.stopHubbConnection();
     }
 
     private getRolesFromToken(user: User): string[] {
