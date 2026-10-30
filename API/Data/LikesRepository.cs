@@ -60,10 +60,7 @@ namespace API.Data
             return await PaginationHelper.CreateAsync(result, likeParams.PageNumber, likeParams.PageSize);
         }
 
-        public async Task<bool> SaveAllChanges()
-        {
-            return await context.SaveChangesAsync() > 0;
-        }
+  
 
     }
 }

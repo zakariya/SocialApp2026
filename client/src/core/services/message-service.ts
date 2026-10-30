@@ -34,9 +34,9 @@ export class MessageService {
             })))
         });
 
-        this.hubConnection.on('NewMessage',(message:Message) =>{
+        this.hubConnection.on('NewMessage', (message: Message) => {
             message.currentUserSender = message.senderId === currentUser.id;
-            this.messageThread.update(messages => [...messages,message])
+            this.messageThread.update(messages => [...messages, message])
         })
     }
 
@@ -59,6 +59,7 @@ export class MessageService {
         return this.http.get<Message[]>(this.baseUrl + 'messages/thread/' + memberId);
     }
     sendMessage(recipientId: string, content: string) {
+        console.log(recipientId);
         return this.hubConnection?.invoke('SendMessage', { recipientId, content })
     }
 

@@ -68,10 +68,14 @@ export class AccountService {
     }
 
     logout() {
-        localStorage.removeItem('filters');
-        this.likeService.clearLikeIds();
-        this.currentUser.set(null);
-        this.presenceService.stopHubbConnection();
+        this.http.post(this.baseUrl + 'account/logout', {}, { withCredentials: true }).subscribe({
+            next: () => {
+                localStorage.removeItem('filters');
+                this.likeService.clearLikeIds();
+                this.currentUser.set(null);
+                this.presenceService.stopHubbConnection();
+            }
+        })
     }
 
     private getRolesFromToken(user: User): string[] {

@@ -28,7 +28,7 @@ namespace API.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            modelBuilder.Entity<Photo>().HasQueryFilter(x => x.IsApproved);
             modelBuilder.Entity<IdentityRole>()
                 .HasData(
                         new IdentityRole { Id = "member-id", Name = "Member", NormalizedName = "MEMBER" },

@@ -17,6 +17,7 @@ namespace API.Data
             return await context.Members
                                 .Include(x => x.User)
                                 .Include(x => x.Photos)
+                                 .IgnoreQueryFilters()
                                 .SingleOrDefaultAsync(x => x.Id == id);
         }
 
@@ -53,14 +54,21 @@ namespace API.Data
                                        .ToListAsync();
         }
 
-        public async Task<bool> SaveAllAsync()
-        {
-            return await context.SaveChangesAsync() > 0;
-        }
+
 
         public void Update(Member member)
         {
             context.Entry(member).State = EntityState.Modified;
+        }
+
+        public async Task<IEnumerable<Photo>> GetPhotosForMemberAsync(string userId, bool isCurrentUser)
+        {
+            var query = context.Members
+                .Where(x => x.Id == userId)
+                .SelectMany(x => x.Photos);
+
+            if (isCurrentUser) query = query.IgnoreQueryFilters();
+            return await query.ToListAsync();
         }
 
     }

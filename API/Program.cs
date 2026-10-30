@@ -1,4 +1,5 @@
 using System.Text;
+using API.Controllers;
 using API.Data;
 using API.Data.Migrations;
 using API.Entities;
@@ -23,7 +24,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
     opt.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
 });
 
@@ -32,9 +33,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddSingleton<CorsCacheService>();
 builder.Services.AddSingleton<LogUserActivity>();
-builder.Services.AddScoped<IMemberRepository, MemberRepository>();
-builder.Services.AddScoped<IMessageRepository, MessageRepository>();
-builder.Services.AddScoped<ILikesRepository, LikesRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.Configure<CloudinarySettings>(builder.Configuration
                 .GetSection("CloudinarySettings"));
 builder.Services.AddSignalR();
@@ -133,7 +132,11 @@ app.UseSwaggerUI();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.MapControllers();
 app.MapHub<PresenceHub>("hubs/presence");
 app.MapHub<MessageHub>("hubs/messages");
+app.MapFallbackToController("Index", "FallBack");
 app.Run();

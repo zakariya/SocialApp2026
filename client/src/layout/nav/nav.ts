@@ -6,6 +6,7 @@ import { ToastService } from '../../core/services/toast-service';
 import { themes } from '../theme';
 import { BusyService } from '../../core/services/busy-service';
 import { HasRole } from '../../shared/directives/has-role';
+import { finalize } from 'rxjs';
 
 @Component({
   imports: [FormsModule, RouterLink, RouterLinkActive, HasRole],
@@ -22,6 +23,7 @@ export class Nav implements OnInit {
   protected creds: any = {};
   protected selectedTheme = signal<string>(localStorage.getItem('theme') || 'light');
   protected themes = themes; //loading theme fro themes.ts
+  protected loading = signal(false);
 
 
   ngOnInit(): void {
@@ -36,22 +38,32 @@ export class Nav implements OnInit {
     if (elem) elem.blur();
   }
 
+  handleSelectUserItem() {
+    const elem = document.activeElement as HTMLDivElement;
+    if (elem) elem.blur();
+  }
+
   login() {
 
+    this.loading.set(true);
+    this.accountService.login(this.creds)
+      .pipe(
+        finalize(() => this.loading.set(false))
+      )
+      .subscribe({
+        next: () => {
 
-    this.accountService.login(this.creds).subscribe({
-      next: () => {
+          this.router.navigateByUrl('/members');
+          this.creds = { email: '', password: '' };
+        }
+        ,
+        error: error => {
 
-        this.router.navigateByUrl('/members');
-        this.creds = { email: '', password: '' };
-      }
-      ,
-      error: error => {
+          this.toast.error(error.error);
 
-        this.toast.error(error.error);
+        }
 
-      }
-    });
+      });
 
   }
   logout() {

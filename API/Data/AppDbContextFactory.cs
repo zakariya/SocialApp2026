@@ -15,7 +15,7 @@ namespace API.Data
                 .Build();
 
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
 
             return new AppDbContext(optionsBuilder.Options);
         }

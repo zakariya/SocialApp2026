@@ -1,3 +1,4 @@
 {
-    "dotnet.defaultSolution": "SocialAppAngular.slnx"
+    "dotnet.defaultSolution": "SocialAppAngular.slnx",
+    "appService.defaultWebAppToDeploy": "/subscriptions/4df19ce0-19e3-46c1-b005-808b3f78b080/resourceGroups/rg-socialapp/providers/Microsoft.Web/sites/socialapp01"
 }

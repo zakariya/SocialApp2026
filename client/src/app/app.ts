@@ -3,12 +3,13 @@ import { Component, inject, signal } from '@angular/core';
 import { Nav } from '../layout/nav/nav';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { ConfirmDialog } from '../shared/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
-  imports: [Nav, RouterOutlet],
+  imports: [Nav, RouterOutlet, ConfirmDialog],
 })
 export class App {
 

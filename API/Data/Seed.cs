@@ -51,7 +51,8 @@ namespace API.Data.Migrations
                 user.Member.Photos.Add(new Photo
                 {
                     Url = member.ImageUrl!,
-                    MemberId = member.Id
+                    MemberId = member.Id,
+                    IsApproved = true
 
                 });
                 var result = await userManager.CreateAsync(user, "Pa$$w0rd");
@@ -69,7 +70,7 @@ namespace API.Data.Migrations
                 DisplayName = "Admin"
             };
             await userManager.CreateAsync(admin, "Pa$$w0rd");
-            await userManager.AddToRolesAsync(admin,["Admin","Moderator"]);
+            await userManager.AddToRolesAsync(admin, ["Admin", "Moderator"]);
 
         }
     }

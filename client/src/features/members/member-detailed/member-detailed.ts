@@ -6,7 +6,8 @@ import { Member } from '../../../types/member';
 import { AgePipe } from '../../../core/pipes/age-pipe';
 import { AccountService } from '../../../core/services/account-service';
 import { PresenceService } from '../../../core/services/presence-service';
-
+import { LikesService } from '../../../core/services/likes-service';
+import { Location } from '@angular/common';
 @Component({
   imports: [RouterLink, RouterLinkActive, RouterOutlet, AgePipe],
   selector: 'app-member-detailed',
@@ -18,12 +19,24 @@ export class MemberDetailed implements OnInit {
   protected memberService = inject(MemberService);
   private accountService = inject(AccountService);
   protected presenceService = inject(PresenceService);
+  protected likesService = inject(LikesService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   protected title = signal<string | undefined>('Profile');
+  private routeId = signal<string | null>(null);
   protected isCurrentUser = computed(() => {
     return this.accountService.currentUser()?.id === this.route.snapshot.paramMap.get('id');
-  })
+  });
+
+  protected hasLiked = computed(() => this.likesService.likeIds().includes(this.routeId()!))
+  constructor(private location: Location) {
+    this.route.paramMap.subscribe(params => {
+      this.routeId.set(params.get('id'));
+    })
+  }
+  goBack() {
+    this.location.back();
+  }
 
   ngOnInit(): void {
 
